@@ -1,0 +1,1 @@
+# browsebuddy_extension
