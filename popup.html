@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website Safety Checker</title>
+  <!-- Tailwind CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.2/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    /* Custom styles for the extension */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f4f5;
+    }
+    #popup-container {
+      width: 320px;
+      max-width: 100%;
+      margin: auto;
+      padding: 1.5rem;
+      background-color: #ffffff;
+      border-radius: 0.75rem;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e2e8f0;
+    }
+    #report {
+      max-height: 180px;
+      overflow-y: auto;
+      background-color: #f1f5f9;
+      border-radius: 0.5rem;
+      padding: 0.5rem;
+      border: 1px solid #d1d5db;
+      margin-top: 1rem;
+    }
+    input[type="phone"] {
+      width: 90%;
+      margin-right: 30px;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      background-color: #f9fafb;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      margin-bottom: 1rem;
+    }
+    input[type="number"]:focus {
+      border-color: #3b82f6;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid transparent;
+      border-radius: 0.375rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #ffffff;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.2s;
+      margin-top: 0.5rem;
+    }
+    #submitScore {
+      background-color: #3b82f6;
+    }
+    #submitScore:hover {
+      background-color: #2563eb;
+      transform: translateY(-2px);
+    }
+    #viewReport {
+      background-color: #10b981;
+    }
+    #viewReport:hover {
+      background-color: #059669;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <div id="popup-container" class="flex flex-col space-y-4">
+    <h1 class="text-2xl font-bold text-gray-800 text-center mb-4">Website Safety Checker</h1>
+    <div id="safety-status" class="text-center text-gray-600 mb-4">Loading...</div>
+    <input type="phone" id="score" placeholder="Enter Safety Score (0-100)" />
+    <button id="submitScore">Submit Score</button>
+    <button id="viewReport">View Detailed Report</button>
+    <pre id="report" class="text-gray-700"></pre>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

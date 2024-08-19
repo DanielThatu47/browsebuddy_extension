@@ -1,0 +1,28 @@
+body {
+    font-family: Arial, sans-serif;
+    width: 300px;
+    padding: 10px;
+  }
+  
+  h1 {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  input {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  button {
+    width: calc(50% - 12px);
+    padding: 10px;
+    margin: 5px;
+  }
+  
+  pre {
+    background-color: #f0f0f0;
+    padding: 10px;
+  }
+  

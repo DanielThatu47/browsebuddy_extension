@@ -1,1 +1,1 @@
-# browsebuddy_extension
+# broswebuddy
