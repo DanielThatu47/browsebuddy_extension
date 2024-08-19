@@ -13,7 +13,7 @@
 
 ### 1. Tab Manager with Grouping and Search
 * `UI Design`: Create a popup with a list of open tabs, grouping options, and a search bar.
-* Functionality`: Use the chrome.tabs API to get the list of open tabs, allow grouping, and implement search functionality.
+* `Functionality`: Use the chrome.tabs API to get the list of open tabs, allow grouping, and implement search functionality.
 
 ### 2. Productivity Tracker
 * `UI Design`: Design a dashboard to display time spent on different websites.
