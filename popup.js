@@ -9,11 +9,18 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       document.getElementById("submitScore").addEventListener("click", () => {
-          const score = document.getElementById("score").value;
+          const scoreInput = document.getElementById("score").value;
+          const score = Number(scoreInput);
+
+          if (!Number.isFinite(score) || score < 0 || score > 100) {
+              alert("Please enter a valid score between 0 and 100.");
+              return;
+          }
+
           chrome.runtime.sendMessage({
               action: "submitSafetyScore",
               url: url,
-              score: score,
+              score: score.toString(),
               user: "currentUser"
           }, (response) => {
               alert(response.message);
@@ -23,11 +30,15 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       document.getElementById("viewReport").addEventListener("click", () => {
-          fetch(`https://browsebuddy.onrender.com/api/report?url=${url}`)
+          fetch(`https://browsebuddy.onrender.com/api/report?url=${encodeURIComponent(url)}`)
               .then(response => response.json())
               .then(data => {
                   document.getElementById("report").innerText = JSON.stringify(data, null, 2);
               });
+      });
+
+      document.getElementById("openOptions").addEventListener("click", () => {
+          chrome.runtime.openOptionsPage();
       });
   });
 });

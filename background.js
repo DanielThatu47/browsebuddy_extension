@@ -1,8 +1,10 @@
-let safetyScores = {};
-
 // Initialize storage on installation
 chrome.runtime.onInstalled.addListener(() => {
     chrome.storage.local.set({ safetyScores: {} });
+    chrome.storage.sync.set({
+        googleSafeBrowsingApiKey: "",
+        virusTotalApiKey: ""
+    });
 });
 
 // Handle messages from content or popup scripts
@@ -20,13 +22,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         }).catch(error => {
             sendResponse({ score: "Not reviewed", message: "" });
         });
+        checkSafety(request.url).catch(error => {
+            console.error("Error running supplemental safety checks:", error);
+        });
         return true; // Keep the message channel open for sendResponse
     }
 });
 
 // Fetch the safety score, or retrieve it from the BrowseBuddy API if not found locally
 async function fetchSafetyScore(url) {
-    return fetch(`https://browsebuddy.onrender.com/api/check?url=${url}`)
+    const encodedUrl = encodeURIComponent(url);
+    return fetch(`https://browsebuddy.onrender.com/api/check?url=${encodedUrl}`)
         .then(response => response.json())
         .then(data => {
             if (data && data.score !== undefined) {
@@ -51,7 +57,6 @@ function submitSafetyScore(url, score, user) {
         .then(response => response.json());
 }
 
-
 // Notify the user about site safety
 function notifyUser(message, type) {
     chrome.notifications.create({
@@ -62,23 +67,21 @@ function notifyUser(message, type) {
     });
 }
 
+function getApiKeys() {
+    return new Promise(resolve => {
+        chrome.storage.sync.get({
+            googleSafeBrowsingApiKey: "",
+            virusTotalApiKey: ""
+        }, resolve);
+    });
+}
 
+function checkWithGoogleSafeBrowsing(url, apiKey) {
+    if (!apiKey) {
+        return Promise.resolve({ safe: true, skipped: true });
+    }
 
-
-
-
-
-
-
-
-
-
-const GOOGLE_SAFE_BROWSING_API_KEY = "AIzaSyDd4dLoXFwoWf2CVSh5-QzxgAKurRkUC4A";
-
-
-
-function checkWithGoogleSafeBrowsing(url) {
-    const requestUrl = `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${GOOGLE_SAFE_BROWSING_API_KEY}`;
+    const requestUrl = `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${apiKey}`;
 
     const body = {
         client: {
@@ -113,33 +116,11 @@ function checkWithGoogleSafeBrowsing(url) {
         });
 }
 
-// Usage within the checkSafety function
-async function checkSafety(url) {
-    // Existing logic...
-
-    // Check with Google Safe Browsing
-    const safeBrowsingResult = await checkWithGoogleSafeBrowsing(url);
-    if (!safeBrowsingResult.safe) {
-        notifyUser('This site is flagged by Google Safe Browsing!', 'unsafe');
+function checkWithVirusTotal(url, apiKey) {
+    if (!apiKey) {
+        return Promise.resolve({ safe: true, skipped: true });
     }
 
-    // Additional logic...
-}
-
-
-
-
-
-
-
-
-
-
-
-
-const VIRUSTOTAL_API_KEY = "60e36d5ffd98adaed48b99828f8689163bc43c75bc96793036b49bef4f18f17c";
-
-function checkWithVirusTotal(url) {
     const requestUrl = `https://www.virustotal.com/api/v3/urls`;
 
     // Encode the URL in base64
@@ -148,7 +129,7 @@ function checkWithVirusTotal(url) {
     return fetch(`${requestUrl}/${urlEncoded}`, {
         method: 'GET',
         headers: {
-            'x-apikey': VIRUSTOTAL_API_KEY
+            'x-apikey': apiKey
         }
     })
         .then(response => response.json())
@@ -164,15 +145,21 @@ function checkWithVirusTotal(url) {
         });
 }
 
-// Usage within the checkSafety function
 async function checkSafety(url) {
-    // Existing logic...
+    const { googleSafeBrowsingApiKey, virusTotalApiKey } = await getApiKeys();
 
-    // Check with VirusTotal
-    const virusTotalResult = await checkWithVirusTotal(url);
+    const [safeBrowsingResult, virusTotalResult] = await Promise.all([
+        checkWithGoogleSafeBrowsing(url, googleSafeBrowsingApiKey),
+        checkWithVirusTotal(url, virusTotalApiKey)
+    ]);
+
+    if (!safeBrowsingResult.safe) {
+        notifyUser('This site is flagged by Google Safe Browsing!', 'unsafe');
+    }
+
     if (!virusTotalResult.safe) {
         notifyUser('This site is flagged by VirusTotal!', 'unsafe');
     }
 
-    // Additional logic...
+    return { safeBrowsingResult, virusTotalResult };
 }
