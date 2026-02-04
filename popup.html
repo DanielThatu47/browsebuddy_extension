@@ -31,7 +31,7 @@
       border: 1px solid #d1d5db;
       margin-top: 1rem;
     }
-    input[type="phone"] {
+    input[type="number"] {
       width: 90%;
       margin-right: 30px;
       padding: 0.75rem;
@@ -72,15 +72,23 @@
       background-color: #059669;
       transform: translateY(-2px);
     }
+    #openOptions {
+      background-color: #6b7280;
+    }
+    #openOptions:hover {
+      background-color: #4b5563;
+      transform: translateY(-2px);
+    }
   </style>
 </head>
 <body>
   <div id="popup-container" class="flex flex-col space-y-4">
     <h1 class="text-2xl font-bold text-gray-800 text-center mb-4">Website Safety Checker</h1>
     <div id="safety-status" class="text-center text-gray-600 mb-4">Loading...</div>
-    <input type="phone" id="score" placeholder="Enter Safety Score (0-100)" />
+    <input type="number" id="score" min="0" max="100" placeholder="Enter Safety Score (0-100)" />
     <button id="submitScore">Submit Score</button>
     <button id="viewReport">View Detailed Report</button>
+    <button id="openOptions">API Settings</button>
     <pre id="report" class="text-gray-700"></pre>
   </div>
   <script src="popup.js"></script>
